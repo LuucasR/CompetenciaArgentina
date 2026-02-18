@@ -1,13 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CompetenciaArgentina</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competencia Argentina</title>
+
+<link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
-     <a href="Privacy-Policy.html">
-        <button>Privacy Policy</button>
-    </a>
+
+<header>
+  <h1>Competencia Argentina</h1>
+  <a href="terminos.html">Términos y Condiciones</a>
+</header>
+
+<div class="filters">
+  <select id="lineaFilter">
+    <option value="all">Todas las líneas</option>
+  </select>
+
+  <select id="categoriaFilter">
+    <option value="all">Todas las categorías</option>
+  </select>
+</div>
+
+<div class="container">
+  <div class="grid" id="productGrid"></div>
+</div>
+
+<footer>
+  © 2026 Competencia Argentina
+</footer>
+
+<div class="modal" id="productModal">
+  <div class="modal-content">
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+
 </body>
 </html>
