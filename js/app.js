@@ -35,6 +35,7 @@ async function fetchProducts() {
 
     populateLineaFilter();
     renderProducts(allProducts);
+    renderFeaturedProducts(); 
   } catch (error) {
     console.error("Error cargando productos:", error);
   }
@@ -122,11 +123,17 @@ function renderProducts(products) {
   grid.innerHTML = "";
 
   products.forEach((product) => {
+
+    // 👇 Tomamos SOLO la primera imagen
+    const firstImage = product.imagen
+      ? product.imagen.split("|")[0].trim()
+      : "";
+
     const card = document.createElement("div");
     card.className = "card";
 
     card.innerHTML = `
-      <img src="${product.imagen}" alt="${product.nombre}" loading="lazy">
+      <img src="${firstImage}" alt="${product.nombre}" loading="lazy">
       <div class="card-content">
         <h3>${product.nombre}</h3>
         <div class="price">$${product.precio}</div>
@@ -138,21 +145,60 @@ function renderProducts(products) {
   });
 }
 
+
 /* =========================
    MODAL
 ========================= */
+
+let currentImages = [];
+let currentIndex = 0;
+let startX = 0;
 
 function openModal(product) {
   const modal = document.getElementById("productModal");
   const body = document.getElementById("modalBody");
 
+ currentImages = product.imagen
+  .split("|")
+  .map(url => url.trim())
+  .filter(url => url !== "");
+
+  currentIndex = 0;
+
   body.innerHTML = `
-    <span class="close" onclick="closeModal()">X</span>
-    <img src="${product.imagen}">
+    <span class="close" onclick="closeModal()">✕</span>
+
+    <div class="modal-gallery">
+      <button class="nav-btn left" onclick="prevImage()">‹</button>
+
+      <img id="modalImage" 
+           src="${currentImages[0]}" 
+           class="fade-in"
+           onclick="toggleZoom(this)"/>
+
+      <button class="nav-btn right" onclick="nextImage()">›</button>
+    </div>
+
+    <div class="thumbnails">
+      ${currentImages.map((img, i) => `
+        <img src="${img}" 
+             class="thumb ${i === 0 ? "active-thumb" : ""}" 
+             onclick="goToImage(${i})">
+      `).join("")}
+    </div>
+
+    <div class="dots">
+      ${currentImages.map((_, i) => `
+        <span class="dot ${i === 0 ? "active-dot" : ""}" 
+              onclick="goToImage(${i})"></span>
+      `).join("")}
+    </div>
+
     <h2>${product.nombre}</h2>
     <p>${product.descripcion}</p>
     <div class="price">$${product.precio}</div>
     <p>${product.caracteristicas}</p>
+
     <a class="btn" target="_blank"
       href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
         "Hola, quiero comprar " + product.nombre
@@ -162,6 +208,58 @@ function openModal(product) {
   `;
 
   modal.style.display = "flex";
+
+  enableSwipe();
+}
+
+function updateGallery() {
+  const img = document.getElementById("modalImage");
+  img.classList.remove("fade-in");
+  void img.offsetWidth;
+  img.src = currentImages[currentIndex];
+  img.classList.add("fade-in");
+
+  document.querySelectorAll(".thumb").forEach((t, i) => {
+    t.classList.toggle("active-thumb", i === currentIndex);
+  });
+
+  document.querySelectorAll(".dot").forEach((d, i) => {
+    d.classList.toggle("active-dot", i === currentIndex);
+  });
+}
+
+function nextImage() {
+  currentIndex = (currentIndex + 1) % currentImages.length;
+  updateGallery();
+}
+
+function prevImage() {
+  currentIndex =
+    (currentIndex - 1 + currentImages.length) % currentImages.length;
+  updateGallery();
+}
+
+function goToImage(index) {
+  currentIndex = index;
+  updateGallery();
+}
+
+function toggleZoom(img) {
+  img.classList.toggle("zoomed");
+}
+
+function enableSwipe() {
+  const img = document.getElementById("modalImage");
+
+  img.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+  });
+
+  img.addEventListener("touchend", (e) => {
+    let endX = e.changedTouches[0].clientX;
+    if (startX - endX > 50) nextImage();
+    if (endX - startX > 50) prevImage();
+  });
 }
 
 function closeModal() {
@@ -174,3 +272,50 @@ window.addEventListener("click", (event) => {
     modal.style.display = "none";
   }
 });
+
+/* =========================
+   PRODUCTFEATURED
+========================= */
+
+
+function renderFeaturedProducts() {
+  const container = document.getElementById("featuredProducts");
+
+const destacados = allProducts.filter(
+  p => String(p.destacado).toLowerCase() === "true"
+);
+
+  if (destacados.length === 0) {
+    container.style.display = "none";
+    return;
+  }
+
+  container.innerHTML = "";
+
+  destacados.forEach(product => {
+    const firstImage = product.imagen.split("|")[0].trim();
+
+    const card = document.createElement("div");
+    card.className = "featured-card";
+
+    card.innerHTML = `
+      <img src="${firstImage}">
+      <div class="featured-info">
+        <h3>${product.nombre}</h3>
+        <span>$${product.precio}</span>
+      </div>
+    `;
+
+    card.addEventListener("click", () => openModal(product));
+    container.appendChild(card);
+  });
+}
+
+function scrollFeatured(direction) {
+  const track = document.getElementById("featuredProducts");
+  const scrollAmount = 320; 
+  track.scrollBy({
+    left: direction * scrollAmount,
+    behavior: "smooth"
+  });
+}

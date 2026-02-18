@@ -1,22 +1,59 @@
+/* ========================================
+   BASE
+======================================== */
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f2f2f2;
+  background: #f4f6f9;
 }
 
 header {
-  background: #111;
+  background: linear-gradient(90deg, #6ec1ff, #3da9fc);
   color: white;
-  padding: 15px 30px;
+  padding: 18px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo {
+  height: 50px;
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.brand-text span {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
 header a {
   color: white;
+  font-weight: 500;
   text-decoration: none;
 }
+
+footer {
+  text-align: center;
+  padding: 30px;
+  background: #3da9fc;
+  color: white;
+  margin-top: 60px;
+}
+
+/* ========================================
+   FILTROS
+======================================== */
 
 .filters {
   display: flex;
@@ -27,9 +64,14 @@ header a {
 }
 
 select {
-  padding: 8px;
-  border-radius: 5px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
+
+/* ========================================
+   GRID PRODUCTOS
+======================================== */
 
 .container {
   padding: 20px;
@@ -45,11 +87,12 @@ select {
 
 .card {
   background: white;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: 0.2s ease;
+  border: 1px solid #eee;
 }
 
 .card:hover {
@@ -71,59 +114,223 @@ select {
   margin-top: 10px;
 }
 
-/* Modal */
+/* ========================================
+   DESTACADOS
+======================================== */
+
+.featured-section {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.featured-section h2 {
+  margin-bottom: 10px;
+  font-size: 26px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.featured-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.featured-track {
+  display: flex;
+  gap: 25px;
+  overflow-x: auto;
+scrollbar-width: none;
+  scroll-behavior: smooth;
+  width: 100%;
+  padding: 20px 0;
+}
+.featured-track::-webkit-scrollbar {
+  display: none;
+}
+
+.featured-card {
+  min-width: 280px;
+  max-width: 280px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.featured-card:hover {
+  transform: scale(1.05);
+}
+
+.featured-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.featured-info {
+  padding: 15px;
+}
+
+.featured-info h3 {
+  margin: 0 0 8px;
+}
+
+.featured-info span {
+  font-weight: bold;
+}
+
+/* Flechas destacados */
+
+.featured-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: black;
+  color: white;
+  border: none;
+  font-size: 22px;
+  padding: 12px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.featured-arrow.left {
+  left: -15px;
+}
+
+.featured-arrow.right {
+  right: -15px;
+}
+
+/* ========================================
+   MODAL
+======================================== */
 
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0,0,0,0.7);
   display: none;
   justify-content: center;
   align-items: center;
+  z-index: 9999;
 }
 
 .modal-content {
   background: white;
   width: 600px;
   max-width: 95%;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.modal-content img {
-  width: 100%;
-  height: 350px;
-  object-fit: cover;
-}
-
-.modal-body {
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
   padding: 20px;
+  position: relative;
 }
 
 .close {
   cursor: pointer;
-  float: right;
-  font-size: 18px;
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 20px;
 }
+
+/* ========================================
+   GALERÍA MODAL
+======================================== */
+
+.modal-gallery {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.modal-gallery img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  cursor: zoom-in;
+  transition: transform 0.3s ease;
+}
+
+.modal-gallery img.zoomed {
+  transform: scale(1.8);
+  cursor: zoom-out;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  font-size: 28px;
+  padding: 10px 15px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.nav-btn.left { left: 10px; }
+.nav-btn.right { right: 10px; }
+
+/* ========================================
+   MINIATURAS
+======================================== */
+
+.thumbnails {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  overflow-x: auto;
+}
+
+.thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  cursor: pointer;
+  opacity: 0.6;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+}
+
+.thumb:hover { opacity: 1; }
+
+.active-thumb {
+  opacity: 1;
+  border: 2px solid #3da9fc;
+}
+
+/* ========================================
+   BOTÓN WHATSAPP
+======================================== */
 
 .btn {
   display: block;
   text-align: center;
-  padding: 12px;
-  background: black;
-  color: white;
+  padding: 14px;
+  background: #ffce00;
+  color: black;
   text-decoration: none;
-  border-radius: 5px;
+  border-radius: 8px;
   margin-top: 15px;
+  font-weight: bold;
+  transition: 0.2s ease;
 }
 
-footer {
-  text-align: center;
-  padding: 20px;
-  background: #111;
-  color: white;
-  margin-top: 40px;
+.btn:hover {
+  background: #f5c400;
 }
