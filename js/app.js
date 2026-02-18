@@ -166,46 +166,84 @@ function openModal(product) {
   currentIndex = 0;
 
   body.innerHTML = `
-    <span class="close" onclick="closeModal()">✕</span>
+  <span class="close" onclick="closeModal()">✕</span>
 
-    <div class="modal-gallery">
-      <button class="nav-btn left" onclick="prevImage()">‹</button>
+  <div class="modal-gallery">
+    <button class="nav-btn left" onclick="prevImage()">‹</button>
 
-      <img id="modalImage" 
-           src="${currentImages[0]}" 
-           class="fade-in"
-           onclick="toggleZoom(this)"/>
+    <img id="modalImage" 
+         src="${currentImages[0]}" 
+         onclick="toggleZoom(this)"/>
 
-      <button class="nav-btn right" onclick="nextImage()">›</button>
-    </div>
+    <button class="nav-btn right" onclick="nextImage()">›</button>
+  </div>
 
-    <div class="thumbnails">
-      ${currentImages.map((img, i) => `
-        <img src="${img}" 
-             class="thumb ${i === 0 ? "active-thumb" : ""}" 
-             onclick="goToImage(${i})">
-      `).join("")}
-    </div>
+  <div class="thumbnails">
+    ${currentImages.map((img, i) => `
+      <img src="${img}" 
+           class="thumb ${i === 0 ? "active-thumb" : ""}" 
+           onclick="goToImage(${i})">
+    `).join("")}
+  </div>
 
-    <div class="dots">
-      ${currentImages.map((_, i) => `
-        <span class="dot ${i === 0 ? "active-dot" : ""}" 
-              onclick="goToImage(${i})"></span>
-      `).join("")}
-    </div>
+ <h2>${product.nombre}</h2>
 
-    <h2>${product.nombre}</h2>
+<div class="product-description-box">
+    <h4>Descripción</h4>
     <p>${product.descripcion}</p>
-    <div class="price">$${product.precio}</div>
-    <p>${product.caracteristicas}</p>
+</div>
 
-    <a class="btn" target="_blank"
-      href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-        "Hola, quiero comprar " + product.nombre
-      )}">
-      Comprar por WhatsApp
-    </a>
-  `;
+<div class="product-features">
+    <strong>Características:</strong>
+    <p>${product.caracteristicas}</p>
+</div>
+
+<div class="price-box">
+    <h4>Precios</h4>
+    <div class="price-tier">
+        <span>Precio unitario:</span>
+        <strong>$${product.precio}</strong>
+    </div>
+    <div class="price-tier">
+        <span>Hasta 3 unidades:</span>
+        <strong>$${product.precio * 0.90}</strong>
+    </div>
+    <div class="price-tier">
+        <span>Más de 5 unidades:</span>
+        <strong>$${product.precio * 0.62}</strong>
+    </div>
+</div>
+
+<div class="buy-options">
+    <h3 class="buy-title">Opciones de compra</h3>
+
+    <div class="buy-buttons">
+        <a class="buy-btn whatsapp"
+           target="_blank"
+           href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+             "Hola, quiero comprar " + product.nombre
+           )}">
+           WhatsApp
+        </a>
+
+        <a class="buy-btn instagram"
+           target="_blank"
+           href="https://www.instagram.com/competenciaargentina/">
+           Instagram
+        </a>
+
+        <a class="buy-btn facebook"
+           target="_blank"
+           href="https://www.facebook.com/profile.php?id=61588363227913">
+           Facebook
+        </a>
+    </div>
+</div>
+
+
+  
+`;
+;
 
   modal.style.display = "flex";
 
