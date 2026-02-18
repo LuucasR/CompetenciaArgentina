@@ -1,56 +1,98 @@
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTPCrVMBxo2kPiM7vJqCKT0kFOtdX8iKQRJXESoIH3y03Zsbdwt_YEx0EWmh3AqTdDZSOVJUpfo89kC/pub?output=csv";
-const WHATSAPP_NUMBER = "549XXXXXXXXXX";
+const SHEET_URL = "https://opensheet.elk.sh/1E9CVyFR-O3GbF9ITdN5M4SJo48q4U7kh3-ypAL9ss78/Sheet1";
+const WHATSAPP_NUMBER = "541169233139";
 
 let allProducts = [];
 
+/* =========================
+   INIT
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  fetchProducts();
+});
+
+/* =========================
+   FETCH PRODUCTS (JSON)
+========================= */
+
 async function fetchProducts() {
-  const response = await fetch(SHEET_URL);
-  const data = await response.text();
-  const rows = data.split("\n").slice(1);
+  try {
+    const response = await fetch(SHEET_URL);
+    const data = await response.json();
 
-  allProducts = rows.map(row => {
-    const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
-    if (!cols) return null;
+    allProducts = data.map((row) => ({
+      id: row.id?.trim(),
+      nombre: row.nombre?.trim(),
+      descripcion: row.descripcion?.trim(),
+      precio: row.precio?.trim(),
+      imagen: row.imagen?.trim(),
+      caracteristicas: row.caracteristicas?.trim(),
+      stock: row.stock?.trim(),
+      destacado: row.destacado?.trim(),
+      linea: row.linea?.trim(),
+      categoria: row.categoria?.trim(),
+    }));
 
-    return {
-      id: cols[0],
-      nombre: cols[1],
-      descripcion: cols[2],
-      precio: cols[3],
-      imagen: cols[4],
-      caracteristicas: cols[5],
-      stock: cols[6],
-      destacado: cols[7],
-      linea: cols[8],
-      categoria: cols[9]
-    };
-  }).filter(Boolean);
-
-  populateFilters();
-  renderProducts(allProducts);
+    populateLineaFilter();
+    renderProducts(allProducts);
+  } catch (error) {
+    console.error("Error cargando productos:", error);
+  }
 }
 
-function populateFilters() {
-  const lineaSet = new Set();
-  const categoriaSet = new Set();
+/* =========================
+   FILTROS
+========================= */
 
-  allProducts.forEach(p => {
-    lineaSet.add(p.linea);
-    categoriaSet.add(p.categoria);
+function populateLineaFilter() {
+  const lineaFilter = document.getElementById("lineaFilter");
+
+  const lineaSet = new Set();
+  allProducts.forEach((p) => {
+    if (p.linea) lineaSet.add(p.linea);
   });
 
-  const lineaFilter = document.getElementById("lineaFilter");
+  lineaFilter.innerHTML = `<option value="all">Todas las líneas</option>`;
+
+  lineaSet.forEach((linea) => {
+    lineaFilter.innerHTML += `<option value="${linea}">${linea}</option>`;
+  });
+
+  lineaFilter.addEventListener("change", handleLineaChange);
+
+  updateCategoriaFilter("all");
+}
+
+function handleLineaChange() {
+  const lineaValue = document.getElementById("lineaFilter").value;
+
+  updateCategoriaFilter(lineaValue);
+  applyFilters();
+}
+
+function updateCategoriaFilter(lineaSeleccionada) {
   const categoriaFilter = document.getElementById("categoriaFilter");
 
-  lineaSet.forEach(l => {
-    lineaFilter.innerHTML += `<option value="${l}">${l}</option>`;
+  const categoriaSet = new Set();
+
+  allProducts.forEach((p) => {
+    if (
+      p.categoria &&
+      (lineaSeleccionada === "all" || p.linea === lineaSeleccionada)
+    ) {
+      categoriaSet.add(p.categoria);
+    }
   });
 
-  categoriaSet.forEach(c => {
-    categoriaFilter.innerHTML += `<option value="${c}">${c}</option>`;
+  categoriaFilter.innerHTML =
+    `<option value="all">Todas las categorías</option>`;
+
+  categoriaSet.forEach((categoria) => {
+    categoriaFilter.innerHTML +=
+      `<option value="${categoria}">${categoria}</option>`;
   });
 
-  lineaFilter.addEventListener("change", applyFilters);
+  categoriaFilter.removeEventListener("change", applyFilters);
   categoriaFilter.addEventListener("change", applyFilters);
 }
 
@@ -60,25 +102,31 @@ function applyFilters() {
 
   let filtered = allProducts;
 
-  if (lineaValue !== "all")
-    filtered = filtered.filter(p => p.linea === lineaValue);
+  if (lineaValue !== "all") {
+    filtered = filtered.filter((p) => p.linea === lineaValue);
+  }
 
-  if (categoriaValue !== "all")
-    filtered = filtered.filter(p => p.categoria === categoriaValue);
+  if (categoriaValue !== "all") {
+    filtered = filtered.filter((p) => p.categoria === categoriaValue);
+  }
 
   renderProducts(filtered);
 }
+
+/* =========================
+   RENDER PRODUCTOS
+========================= */
 
 function renderProducts(products) {
   const grid = document.getElementById("productGrid");
   grid.innerHTML = "";
 
-  products.forEach(product => {
+  products.forEach((product) => {
     const card = document.createElement("div");
     card.className = "card";
 
     card.innerHTML = `
-      <img src="${product.imagen}" alt="${product.nombre}">
+      <img src="${product.imagen}" alt="${product.nombre}" loading="lazy">
       <div class="card-content">
         <h3>${product.nombre}</h3>
         <div class="price">$${product.precio}</div>
@@ -89,6 +137,10 @@ function renderProducts(products) {
     grid.appendChild(card);
   });
 }
+
+/* =========================
+   MODAL
+========================= */
 
 function openModal(product) {
   const modal = document.getElementById("productModal");
@@ -102,7 +154,9 @@ function openModal(product) {
     <div class="price">$${product.precio}</div>
     <p>${product.caracteristicas}</p>
     <a class="btn" target="_blank"
-      href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola, quiero comprar " + product.nombre)}">
+      href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+        "Hola, quiero comprar " + product.nombre
+      )}">
       Comprar por WhatsApp
     </a>
   `;
@@ -114,11 +168,9 @@ function closeModal() {
   document.getElementById("productModal").style.display = "none";
 }
 
-window.onclick = function(event) {
+window.addEventListener("click", (event) => {
   const modal = document.getElementById("productModal");
   if (event.target === modal) {
     modal.style.display = "none";
   }
-};
-
-fetchProducts();
+});
