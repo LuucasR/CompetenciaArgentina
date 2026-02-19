@@ -166,15 +166,15 @@ function openModal(product) {
   currentIndex = 0;
 
   body.innerHTML = `
-  <span class="close" onclick="closeModal()">✕</span>
+<span class="close" onclick="closeModal()">✕</span>
+
+<div class="modal-left">
 
   <div class="modal-gallery">
     <button class="nav-btn left" onclick="prevImage()">‹</button>
-
     <img id="modalImage" 
          src="${currentImages[0]}" 
          onclick="toggleZoom(this)"/>
-
     <button class="nav-btn right" onclick="nextImage()">›</button>
   </div>
 
@@ -186,62 +186,64 @@ function openModal(product) {
     `).join("")}
   </div>
 
- <h2>${product.nombre}</h2>
-
-<div class="product-description-box">
-    <h4>Descripción</h4>
-    <p>${product.descripcion}</p>
 </div>
 
-<div class="product-features">
-    <strong>Características:</strong>
-    <p>${product.caracteristicas}</p>
+<div class="modal-right">
+
+  <h2>${product.nombre}</h2>
+
+  <div class="product-description-box">
+      <h4>Descripción</h4>
+      <p>${product.descripcion}</p>
+  </div>
+
+  <div class="product-features">
+      <strong>Características:</strong>
+      <p>${product.caracteristicas}</p>
+  </div>
+
+  <div class="price-box">
+      <h4>Precios</h4>
+      <div class="price-tier">
+          <span>Precio unitario:</span>
+          <strong>$${product.precio}</strong>
+      </div>
+      <div class="price-tier">
+          <span>Hasta 3 unidades:</span>
+          <strong>$${product.precio * 0.90}</strong>
+      </div>
+      <div class="price-tier">
+          <span>Más de 5 unidades:</span>
+          <strong>$${product.precio * 0.62}</strong>
+      </div>
+  </div>
+
+  <div class="buy-options">
+      <h3 class="buy-title">Canales de compra aqui</h3>
+      <div class="buy-buttons">
+          <a class="buy-btn whatsapp"
+             target="_blank"
+             href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+               "Hola, quiero comprar " + product.nombre
+             )}">
+             WhatsApp
+          </a>
+
+          <a class="buy-btn instagram"
+             target="_blank"
+             href="https://www.instagram.com/competenciaargentina/">
+             Instagram
+          </a>
+
+          <a class="buy-btn facebook"
+             target="_blank"
+             href="https://www.facebook.com/profile.php?id=61588363227913">
+             Facebook
+          </a>
+      </div>
+  </div>
+
 </div>
-
-<div class="price-box">
-    <h4>Precios</h4>
-    <div class="price-tier">
-        <span>Precio unitario:</span>
-        <strong>$${product.precio}</strong>
-    </div>
-    <div class="price-tier">
-        <span>Hasta 3 unidades:</span>
-        <strong>$${product.precio * 0.90}</strong>
-    </div>
-    <div class="price-tier">
-        <span>Más de 5 unidades:</span>
-        <strong>$${product.precio * 0.62}</strong>
-    </div>
-</div>
-
-<div class="buy-options">
-    <h3 class="buy-title">Opciones de compra</h3>
-
-    <div class="buy-buttons">
-        <a class="buy-btn whatsapp"
-           target="_blank"
-           href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-             "Hola, quiero comprar " + product.nombre
-           )}">
-           WhatsApp
-        </a>
-
-        <a class="buy-btn instagram"
-           target="_blank"
-           href="https://www.instagram.com/competenciaargentina/">
-           Instagram
-        </a>
-
-        <a class="buy-btn facebook"
-           target="_blank"
-           href="https://www.facebook.com/profile.php?id=61588363227913">
-           Facebook
-        </a>
-    </div>
-</div>
-
-
-  
 `;
 ;
 

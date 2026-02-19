@@ -171,9 +171,9 @@ select:focus {
 
 .featured-container {
   position: relative;
-  display: flex;
-  align-items: center;
+  overflow: visible;
 }
+
 
 .featured-track {
   display: flex;
@@ -228,6 +228,7 @@ scrollbar-width: none;
 
 .featured-arrow {
   position: absolute;
+   z-index: 20;
   top: 50%;
   transform: translateY(-50%);
   width: 44px;
@@ -252,20 +253,11 @@ scrollbar-width: none;
 }
 
 .featured-arrow.left {
-  left: -20px;
+  left: 10px;
 }
 
 .featured-arrow.right {
-  right: -20px;
-}
-
-
-.featured-arrow.left {
-  left: -15px;
-}
-
-.featured-arrow.right {
-  right: -15px;
+  right: 10px;
 }
 
 /* =========================
@@ -284,20 +276,61 @@ scrollbar-width: none;
 
 .modal-content {
   background: white;
-  width: 650px;
+  width: 1300px;        /* más ancho */
   max-width: 95%;
-  max-height: 85vh; /* ↓ más bajo */
-  overflow-y: auto;
-  border-radius: 14px;
-  padding: 18px; /* ↓ menos padding */
+  height: 60vh;         /* más alto */
+  border-radius: 20px;
+  padding: 40px;
   position: relative;
+
+  display: flex;
+  gap: 60px;
+
+  overflow: hidden;
 }
+
+.modal-body {
+  display: flex;
+  width: 100%;
+  gap: 60px;
+}
+
+/* ===== LEFT ===== */
+
+.modal-left {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* 🔥 centra vertical */
+}
+
 
 .modal-gallery img {
   width: 100%;
-  height: 350px; /* ↓ imagen un poco más chica */
+  height: 520px;     /* imagen mucho más grande */
   object-fit: cover;
+  border-radius: 14px;
 }
+
+.thumbnails {
+  margin-top: 20px;
+}
+
+/* ===== RIGHT ===== */
+
+.modal-right {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.modal-right h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+
 
 /* =========================
    INFO BOX (Descripción / Características)
