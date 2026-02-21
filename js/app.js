@@ -168,26 +168,29 @@ function openModal(product) {
   currentIndex = 0;
 
   let precioBase = product.precio;
+  let precioInicial = precioBase;
+  let nombreMedidaInicial = "";
 
-  /* ===== CONSTRUIR SELECTOR DE MEDIDAS SI EXISTE ===== */
+  /* ===== CONSTRUIR SELECTOR DE MEDIDAS ===== */
 
   let selectorMedidasHTML = "";
-  let precioInicial = precioBase;
 
   if (product.medidas && product.medidas !== "") {
 
     const medidasArray = product.medidas.split("|");
 
     const opciones = medidasArray.map((m, index) => {
+
       const partes = m.split(":");
       const nombre = partes[0]?.trim();
       const precio = parseFloat(partes[1]);
 
       if (index === 0) {
         precioInicial = precio;
+        nombreMedidaInicial = nombre;
       }
 
-      return `<option value="${precio}">${nombre}</option>`;
+      return `<option data-nombre="${nombre}" value="${precio}">${nombre}</option>`;
     }).join("");
 
     selectorMedidasHTML = `
@@ -204,12 +207,9 @@ function openModal(product) {
 <span class="close" onclick="closeModal()">✕</span>
 
 <div class="modal-left">
-
   <div class="modal-gallery">
     <button class="nav-btn left" onclick="prevImage()">‹</button>
-    <img id="modalImage" 
-         src="${currentImages[0]}" 
-         onclick="toggleZoom(this)"/>
+    <img id="modalImage" src="${currentImages[0]}" onclick="toggleZoom(this)"/>
     <button class="nav-btn right" onclick="nextImage()">›</button>
   </div>
 
@@ -220,7 +220,6 @@ function openModal(product) {
            onclick="goToImage(${i})">
     `).join("")}
   </div>
-
 </div>
 
 <div class="modal-right">
@@ -239,7 +238,6 @@ function openModal(product) {
 
   <div class="price-box">
       <h4>Precios</h4>
-
       ${selectorMedidasHTML}
 
       <div class="price-tier">
@@ -261,13 +259,10 @@ function openModal(product) {
   <div class="buy-options">
       <h3 class="buy-title">Canales de compra aqui</h3>
       <div class="buy-buttons">
-          <a class="buy-btn whatsapp"
-             target="_blank"
-             href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-               "Hola, quiero comprar " + product.nombre
-             )}">
-             WhatsApp
-          </a>
+
+          <button class="buy-btn whatsapp" id="btnComprar">
+             Comprar por WhatsApp
+          </button>
 
           <a class="buy-btn instagram"
              target="_blank"
@@ -280,6 +275,7 @@ function openModal(product) {
              href="https://www.facebook.com/profile.php?id=61588363227913">
              Facebook
           </a>
+
       </div>
   </div>
 
@@ -300,6 +296,44 @@ function openModal(product) {
       document.getElementById("precioMas5").textContent = "$" + Math.floor(nuevoPrecio * 0.78);
     });
   }
+
+  /* ===== BOTÓN COMPRAR CON POPUP DE CANTIDAD ===== */
+
+  document.getElementById("btnComprar").addEventListener("click", function () {
+
+    const cantidad = parseInt(prompt("¿Cuántas unidades querés comprar?"));
+
+    if (!cantidad || cantidad <= 0) return;
+
+    let precioActual = precioInicial;
+    let nombreMedida = nombreMedidaInicial;
+
+    if (sizeSelect) {
+      const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
+      precioActual = parseFloat(selectedOption.value);
+      nombreMedida = selectedOption.getAttribute("data-nombre");
+    }
+
+    let precioFinal = precioActual;
+
+    if (cantidad <= 3) {
+      precioFinal = Math.floor(precioActual * 0.88);
+    } else if (cantidad > 5) {
+      precioFinal = Math.floor(precioActual * 0.78);
+    }
+
+    const total = precioFinal * cantidad;
+
+    const mensaje = `
+Hola, quiero comprar ${product.nombre}
+Medida: ${nombreMedida}
+Cantidad: ${cantidad}
+`;
+
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
+
+    window.open(url, "_blank");
+  });
 
   modal.style.display = "flex";
   enableSwipe();

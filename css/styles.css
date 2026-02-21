@@ -371,27 +371,6 @@ scrollbar-width: none;
   font-size: 14px;
 }
 
-/* =========================
-   BUY OPTIONS
-========================= */
-
-.buy-options {
-  margin-top: 15px; /* ↓ menos espacio */
-  text-align: center;
-}
-
-.buy-title {
-  margin-bottom: 12px;
-}
-
-.buy-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-
 /* ========================================
    GALERÍA MODAL
 ======================================== */
@@ -583,70 +562,70 @@ header {
   background: #25D366;
 }
 
-.instagram {
-  background: linear-gradient(
-    45deg,
-    #f58529,
-    #dd2a7b,
-    #8134af,
-    #515bd4
-  );
-}
-
 
 /* ========================================
    OPCIONES DE COMPRA MODAL
 ======================================== */
 
+/* =========================
+   BOTONES COMPRA MODAL
+========================= */
+
 .buy-options {
-  margin-top: 25px;
+  width: 80%;
+  max-width: 420px;
+  margin: 20px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .buy-title {
-  font-weight: bold;
-  margin-bottom: 10px;
+  text-align: center;
+  margin-bottom: 15px;
+  width: 100%;
 }
 
 .buy-buttons {
+  width: 100%;
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  flex-wrap: wrap;
+}
+
+.buy-btn.whatsapp,
+.buy-btn.instagram,
+.buy-btn.facebook {
+  border: 2px solid rgba(0,0,0,0.25);
 }
 
 .buy-btn {
-  flex: 1;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
   text-align: center;
-  padding: 12px;
-  border-radius: 8px;
-  text-decoration: none;
-  color: white;
   font-weight: 600;
-  transition: 0.2s ease;
+  font-size: 16px;
+  color: white;
+  text-decoration: none;
+
+  box-sizing: border-box;   /* 🔥 IMPORTANTE */
 }
 
 .buy-btn:hover {
   transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0,0,0,0.3);
 }
 
-/* Colores oficiales */
-
-.buy-btn.whatsapp {
-  background: #25D366;
+.buy-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.3);
 }
 
-.buy-btn.instagram {
-  background: linear-gradient(
-    45deg,
-    #f58529,
-    #dd2a7b,
-    #8134af,
-    #515bd4
-  );
-}
-
-.buy-btn.facebook {
-  background: #1877F2;
-}
+/* Colores planos */
+.buy-btn.whatsapp { background: #25D366; }
+.buy-btn.instagram { background: #E1306C; }
+.buy-btn.facebook { background: #1877F2; }
 
 /* ========================================
    BOTONES SOCIALES FLOTANTES
@@ -794,27 +773,6 @@ header {
 }
 
 /* =========================
-   BUY OPTIONS
-========================= */
-
-.buy-options {
-  margin-top: 20px;
-  text-align: center;
-}
-
-.buy-title {
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.buy-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-/* =========================
    catalogo
 ========================= */
 .titlecatalogo{
@@ -827,67 +785,6 @@ margin: 0 auto;
 /* ========================================
    MOBILE FIX
 ======================================== */
-
-/* ========================================
-   BUY OPTIONS LIMPIO Y CENTRADO
-======================================== */
-
-.buy-options {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.buy-title {
-  text-align: center;
-  margin-bottom: 15px;
-  width: 100%;
-}
-
-.buy-buttons {
-  width: 100%;
-  max-width: 420px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.buy-btn {
-  width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  text-align: center;
-  font-weight: 600;
-  color: white;
-  text-decoration: none;
-  transition: 0.2s ease;
-}
-
-.buy-btn:hover {
-  transform: translateY(-2px);
-}
-
-/* Colores oficiales */
-.buy-btn.whatsapp {
-  background: #25D366;
-}
-
-.buy-btn.instagram {
-  background: linear-gradient(
-    45deg,
-    #f58529,
-    #dd2a7b,
-    #8134af,
-    #515bd4
-  );
-}
-
-.buy-btn.facebook {
-  background: #1877F2;
-}
-
 
 /* ========================================
    SOCIAL FLOATING REAL (NO AFECTA LAYOUT)
@@ -928,15 +825,7 @@ margin: 0 auto;
   background: #25D366;
 }
 
-.social-btn.instagram {
-  background: linear-gradient(
-    45deg,
-    #f58529,
-    #dd2a7b,
-    #8134af,
-    #515bd4
-  );
-}
+
 
 .social-btn.facebook {
   background: #1877F2;
