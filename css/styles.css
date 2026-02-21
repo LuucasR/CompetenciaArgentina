@@ -826,3 +826,176 @@ header {
   text-align: center;
 margin: 0 auto;
 }
+
+/* ========================================
+   MOBILE FIX
+======================================== */
+
+/* ========================================
+   BUY OPTIONS LIMPIO Y CENTRADO
+======================================== */
+
+.buy-options {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.buy-title {
+  text-align: center;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.buy-buttons {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.buy-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.buy-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Colores oficiales */
+.buy-btn.whatsapp {
+  background: #25D366;
+}
+
+.buy-btn.instagram {
+  background: linear-gradient(
+    45deg,
+    #f58529,
+    #dd2a7b,
+    #8134af,
+    #515bd4
+  );
+}
+
+.buy-btn.facebook {
+  background: #1877F2;
+}
+
+
+/* ========================================
+   SOCIAL FLOATING REAL (NO AFECTA LAYOUT)
+======================================== */
+
+.social-floating {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.social-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  transition: 0.2s ease;
+  pointer-events: auto;
+}
+
+.social-btn:hover {
+  transform: scale(1.1);
+}
+
+.social-btn.whatsapp {
+  background: #25D366;
+}
+
+.social-btn.instagram {
+  background: linear-gradient(
+    45deg,
+    #f58529,
+    #dd2a7b,
+    #8134af,
+    #515bd4
+  );
+}
+
+.social-btn.facebook {
+  background: #1877F2;
+}
+
+
+/* ========================================
+   MOBILE OPTIMIZADO
+======================================== */
+
+@media (max-width: 768px) {
+
+  body {
+    padding-bottom: 120px; /* evita que botones tapen contenido */
+  }
+
+  .modal-content {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    padding: 15px;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .modal-body {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .modal-left,
+  .modal-right {
+    width: 100%;
+  }
+
+  .modal-gallery {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-gallery img {
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+
+  .buy-buttons {
+    max-width: 100%;
+  }
+
+  .social-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+  }
+}
