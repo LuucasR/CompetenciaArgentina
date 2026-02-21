@@ -30,9 +30,6 @@ header {
   gap: 15px;
 }
 
-.logo {
-  height: 50px;
-}
 
 .brand-text h1 {
   margin: 0;
@@ -504,14 +501,14 @@ header {
 /* Logo centrado arriba */
 .header-logo {
   position: absolute;
+  margin: 20px;
   top: 1px;
   left: 50%;
   transform: translateX(-50%);
 }
-
 .header-logo img {
   width: 260px;   /* más chico y prolijo */
-  height: auto;
+  height: 260px;
 }
 
 /* Texto izquierda */
@@ -998,4 +995,50 @@ margin: 0 auto;
     height: 50px;
     font-size: 18px;
   }
+}
+/* ========================================
+   HEADER RESPONSIVE FIX
+======================================== */
+
+@media (max-width: 768px) {
+
+  header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    min-height: auto;
+  }
+
+  .header-logo {
+    position: static;
+    transform: none;
+    margin-bottom: 1px;
+  }
+
+  .header-logo img {
+    width: 200px;
+    height: auto;
+  }
+
+  .header-left {
+    position: static;
+    margin-bottom: 10px;
+  }
+
+  .header-left h1 {
+    font-size: 20px;
+  }
+
+  .header-left span {
+    font-size: 14px;
+  }
+
+  .header-right {
+    position: static;
+    margin-top: 8px;
+  }
+
 }

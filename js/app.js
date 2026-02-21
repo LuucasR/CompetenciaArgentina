@@ -20,18 +20,19 @@ async function fetchProducts() {
     const response = await fetch(SHEET_URL);
     const data = await response.json();
 
-    allProducts = data.map((row) => ({
-      id: row.id?.trim(),
-      nombre: row.nombre?.trim(),
-      descripcion: row.descripcion?.trim(),
-      precio: row.precio?.trim(),
-      imagen: row.imagen?.trim(),
-      caracteristicas: row.caracteristicas?.trim(),
-      stock: row.stock?.trim(),
-      destacado: row.destacado?.trim(),
-      linea: row.linea?.trim(),
-      categoria: row.categoria?.trim(),
-    }));
+allProducts = data.map((row) => ({
+  id: row.id?.trim(),
+  nombre: row.nombre?.trim(),
+  descripcion: row.descripcion?.trim(),
+  precio: parseFloat(row.precio) || 0,
+  imagen: row.imagen?.trim(),
+  caracteristicas: row.caracteristicas?.trim(),
+  stock: row.stock?.trim(),
+  destacado: row.destacado?.trim(),
+  linea: row.linea?.trim(),
+  categoria: row.categoria?.trim(),
+  medidas: row.medidas?.trim() || ""
+}));
 
     populateLineaFilter();
     renderProducts(allProducts);
@@ -155,15 +156,49 @@ let currentIndex = 0;
 let startX = 0;
 
 function openModal(product) {
+
   const modal = document.getElementById("productModal");
   const body = document.getElementById("modalBody");
 
- currentImages = product.imagen
-  .split("|")
-  .map(url => url.trim())
-  .filter(url => url !== "");
+  currentImages = product.imagen
+    .split("|")
+    .map(url => url.trim())
+    .filter(url => url !== "");
 
   currentIndex = 0;
+
+  let precioBase = product.precio;
+
+  /* ===== CONSTRUIR SELECTOR DE MEDIDAS SI EXISTE ===== */
+
+  let selectorMedidasHTML = "";
+  let precioInicial = precioBase;
+
+  if (product.medidas && product.medidas !== "") {
+
+    const medidasArray = product.medidas.split("|");
+
+    const opciones = medidasArray.map((m, index) => {
+      const partes = m.split(":");
+      const nombre = partes[0]?.trim();
+      const precio = parseFloat(partes[1]);
+
+      if (index === 0) {
+        precioInicial = precio;
+      }
+
+      return `<option value="${precio}">${nombre}</option>`;
+    }).join("");
+
+    selectorMedidasHTML = `
+      <div style="margin-bottom:15px;">
+        <label><strong>Medida:</strong></label>
+        <select id="sizeSelect" style="width:100%;padding:8px;border-radius:6px;margin-top:5px;">
+          ${opciones}
+        </select>
+      </div>
+    `;
+  }
 
   body.innerHTML = `
 <span class="close" onclick="closeModal()">✕</span>
@@ -204,17 +239,22 @@ function openModal(product) {
 
   <div class="price-box">
       <h4>Precios</h4>
+
+      ${selectorMedidasHTML}
+
       <div class="price-tier">
           <span>Precio unitario:</span>
-          <strong>$${product.precio}</strong>
+          <strong id="precioUnitario">$${precioInicial}</strong>
       </div>
+
       <div class="price-tier">
           <span>Hasta 3 unidades:</span>
-          <strong>$${product.precio * 0.88}</strong>
+          <strong id="precioHasta3">$${Math.floor(precioInicial * 0.88)}</strong>
       </div>
+
       <div class="price-tier">
           <span>Más de 5 unidades:</span>
-          <strong>$${product.precio * 0.78}</strong>
+          <strong id="precioMas5">$${Math.floor(precioInicial * 0.78)}</strong>
       </div>
   </div>
 
@@ -245,10 +285,23 @@ function openModal(product) {
 
 </div>
 `;
-;
+
+  /* ===== ACTUALIZAR PRECIO DINÁMICO ===== */
+
+  const sizeSelect = document.getElementById("sizeSelect");
+
+  if (sizeSelect) {
+    sizeSelect.addEventListener("change", function () {
+
+      const nuevoPrecio = parseFloat(this.value);
+
+      document.getElementById("precioUnitario").textContent = "$" + nuevoPrecio;
+      document.getElementById("precioHasta3").textContent = "$" + Math.floor(nuevoPrecio * 0.88);
+      document.getElementById("precioMas5").textContent = "$" + Math.floor(nuevoPrecio * 0.78);
+    });
+  }
 
   modal.style.display = "flex";
-
   enableSwipe();
 }
 
