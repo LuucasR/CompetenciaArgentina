@@ -214,7 +214,7 @@ function openModal(product) {
       </div>
       <div class="price-tier">
           <span>Más de 5 unidades:</span>
-          <strong>$${product.precio * 0.73}</strong>
+          <strong>$${product.precio * 0.78}</strong>
       </div>
   </div>
 
