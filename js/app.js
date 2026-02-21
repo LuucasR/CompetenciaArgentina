@@ -167,13 +167,14 @@ function openModal(product) {
 
   currentIndex = 0;
 
-  let precioBase = product.precio;
-  let precioInicial = precioBase;
-  let nombreMedidaInicial = "";
-
-  /* ===== CONSTRUIR SELECTOR DE MEDIDAS ===== */
+  let precioInicial = product.precio;
+  let nombreMedidaInicial = "Única";
 
   let selectorMedidasHTML = "";
+
+  /* =========================
+     SELECTOR MEDIDAS
+  ========================= */
 
   if (product.medidas && product.medidas !== "") {
 
@@ -202,6 +203,21 @@ function openModal(product) {
       </div>
     `;
   }
+
+  /* =========================
+     SELECTOR CANTIDAD
+  ========================= */
+
+  const cantidadHTML = `
+    <div style="margin-bottom:15px;">
+      <label><strong>Cantidad:</strong></label>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:5px;">
+        <button id="menosBtn" type="button">-</button>
+        <span id="cantidadValor">1</span>
+        <button id="masBtn" type="button">+</button>
+      </div>
+    </div>
+  `;
 
   body.innerHTML = `
 <span class="close" onclick="closeModal()">✕</span>
@@ -239,6 +255,7 @@ function openModal(product) {
   <div class="price-box">
       <h4>Precios</h4>
       ${selectorMedidasHTML}
+      ${cantidadHTML}
 
       <div class="price-tier">
           <span>Precio unitario:</span>
@@ -259,67 +276,86 @@ function openModal(product) {
   <div class="buy-options">
       <h3 class="buy-title">Canales de compra aqui</h3>
       <div class="buy-buttons">
-
           <button class="buy-btn whatsapp" id="btnComprar">
              Comprar por WhatsApp
           </button>
-
-          <a class="buy-btn instagram"
-             target="_blank"
-             href="https://www.instagram.com/competenciaargentina/">
-             Instagram
-          </a>
-
-          <a class="buy-btn facebook"
-             target="_blank"
-             href="https://www.facebook.com/profile.php?id=61588363227913">
-             Facebook
-          </a>
-
       </div>
   </div>
 
 </div>
 `;
 
-  /* ===== ACTUALIZAR PRECIO DINÁMICO ===== */
+  /* =========================
+     LÓGICA DINÁMICA
+  ========================= */
 
   const sizeSelect = document.getElementById("sizeSelect");
+  const cantidadSpan = document.getElementById("cantidadValor");
+  const btnMas = document.getElementById("masBtn");
+  const btnMenos = document.getElementById("menosBtn");
 
-  if (sizeSelect) {
-    sizeSelect.addEventListener("change", function () {
+  let cantidad = 1;
 
-      const nuevoPrecio = parseFloat(this.value);
-
-      document.getElementById("precioUnitario").textContent = "$" + nuevoPrecio;
-      document.getElementById("precioHasta3").textContent = "$" + Math.floor(nuevoPrecio * 0.88);
-      document.getElementById("precioMas5").textContent = "$" + Math.floor(nuevoPrecio * 0.78);
-    });
+  function calcularPrecioBase() {
+    if (sizeSelect) {
+      return parseFloat(sizeSelect.value);
+    }
+    return precioInicial;
   }
 
-  /* ===== BOTÓN COMPRAR CON POPUP DE CANTIDAD ===== */
+  function actualizarPrecios() {
+
+    const precioBase = calcularPrecioBase();
+
+    document.getElementById("precioUnitario").textContent =
+      "$" + precioBase;
+
+    document.getElementById("precioHasta3").textContent =
+      "$" + Math.floor(precioBase * 0.88);
+
+    document.getElementById("precioMas5").textContent =
+      "$" + Math.floor(precioBase * 0.78);
+  }
+
+  if (sizeSelect) {
+    sizeSelect.addEventListener("change", actualizarPrecios);
+  }
+
+  btnMas.addEventListener("click", () => {
+    cantidad++;
+    cantidadSpan.textContent = cantidad;
+  });
+
+  btnMenos.addEventListener("click", () => {
+    if (cantidad > 1) {
+      cantidad--;
+      cantidadSpan.textContent = cantidad;
+    }
+  });
+
+  /* =========================
+     BOTÓN WHATSAPP
+  ========================= */
 
   document.getElementById("btnComprar").addEventListener("click", function () {
 
-    const cantidad = parseInt(prompt("¿Cuántas unidades querés comprar?"));
+    const precioBase = calcularPrecioBase();
 
-    if (!cantidad || cantidad <= 0) return;
-
-    let precioActual = precioInicial;
     let nombreMedida = nombreMedidaInicial;
 
     if (sizeSelect) {
-      const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
-      precioActual = parseFloat(selectedOption.value);
-      nombreMedida = selectedOption.getAttribute("data-nombre");
+      const selectedOption =
+        sizeSelect.options[sizeSelect.selectedIndex];
+      nombreMedida =
+        selectedOption.getAttribute("data-nombre");
     }
 
-    let precioFinal = precioActual;
+    let precioFinal = precioBase;
 
     if (cantidad <= 3) {
-      precioFinal = Math.floor(precioActual * 0.88);
+      precioFinal = Math.floor(precioBase * 0.88);
     } else if (cantidad > 5) {
-      precioFinal = Math.floor(precioActual * 0.78);
+      precioFinal = Math.floor(precioBase * 0.78);
     }
 
     const total = precioFinal * cantidad;
