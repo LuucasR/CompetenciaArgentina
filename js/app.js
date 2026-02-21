@@ -350,20 +350,21 @@ function openModal(product) {
         selectedOption.getAttribute("data-nombre");
     }
 
-    let precioFinal = precioBase;
+let precioFinal = precioBase;
 
-    if (cantidad <= 3) {
-      precioFinal = Math.floor(precioBase * 0.88);
-    } else if (cantidad > 5) {
-      precioFinal = Math.floor(precioBase * 0.78);
-    }
-
+if (cantidad >= 3 && cantidad <= 4) {
+  precioFinal = Math.floor(precioBase * 0.88);
+} 
+else if (cantidad >= 5) {
+  precioFinal = Math.floor(precioBase * 0.78);
+}
     const total = precioFinal * cantidad;
 
     const mensaje = `
 Hola, quiero comprar ${product.nombre}
 Medida: ${nombreMedida}
 Cantidad: ${cantidad}
+Total estimado: $${total}
 `;
 
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
