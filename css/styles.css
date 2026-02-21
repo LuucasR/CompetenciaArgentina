@@ -816,3 +816,13 @@ header {
   gap: 15px;
   flex-wrap: wrap;
 }
+
+/* =========================
+   catalogo
+========================= */
+.titlecatalogo{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+margin: 0 auto;
+}
