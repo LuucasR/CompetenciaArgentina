@@ -220,7 +220,10 @@ function openModal(product) {
   `;
 
   body.innerHTML = `
-<span class="close" onclick="closeModal()">✕</span>
+<button class="modal-close" onclick="closeModal()">
+  <span></span>
+  <span></span>
+</button>
 
 <div class="modal-left">
   <div class="modal-gallery">
@@ -372,6 +375,7 @@ Total estimado: $${total}
     window.open(url, "_blank");
   });
 
+  document.body.classList.add("modal-open");
   modal.style.display = "flex";
   enableSwipe();
 }
@@ -428,6 +432,7 @@ function enableSwipe() {
 
 function closeModal() {
   document.getElementById("productModal").style.display = "none";
+  document.body.classList.remove("modal-open");
 }
 
 window.addEventListener("click", (event) => {
