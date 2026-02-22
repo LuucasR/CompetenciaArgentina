@@ -838,10 +838,6 @@ margin: 0 auto;
 
 @media (max-width: 768px) {
 
-  body {
-    padding-bottom: 120px; /* evita que botones tapen contenido */
-  }
-
   .modal-content {
     width: 95%;
     max-height: 85vh;  
@@ -988,4 +984,10 @@ body.modal-open .social-floating {
 /* Active pequeño feedback */
 .modal-close:active {
   transform: scale(0.9);
+}
+/* Botones redes redondos flotantes */
+.social-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
