@@ -1,7 +1,11 @@
+let allProducts = [];
+
+const PRODUCTS_PER_PAGE = 12;
+let currentPage = 1;
+
 const SHEET_URL = "https://opensheet.elk.sh/1E9CVyFR-O3GbF9ITdN5M4SJo48q4U7kh3-ypAL9ss78/Sheet1";
 const WHATSAPP_NUMBER = "541169233139";
 
-let allProducts = [];
 
 /* =========================
    INIT
@@ -35,11 +39,13 @@ allProducts = data.map((row) => ({
 }));
 
     populateLineaFilter();
-    renderProducts(allProducts);
+    renderProducts(allProducts, currentPage);
+renderPagination(allProducts);
     renderFeaturedProducts(); 
   } catch (error) {
     console.error("Error cargando productos:", error);
-  }
+    window.location.href = "../pages/error.php";
+}
 }
 
 /* =========================
@@ -112,18 +118,25 @@ function applyFilters() {
     filtered = filtered.filter((p) => p.categoria === categoriaValue);
   }
 
-  renderProducts(filtered);
+currentPage = 1;
+renderProducts(filtered, currentPage);
+renderPagination(filtered);
 }
 
 /* =========================
    RENDER PRODUCTOS
 ========================= */
 
-function renderProducts(products) {
-  const grid = document.getElementById("productGrid");
+function renderProducts(products, page = 1) {
+    const grid = document.getElementById("productGrid");
   grid.innerHTML = "";
 
-  products.forEach((product) => {
+  const start = (page - 1) * PRODUCTS_PER_PAGE;
+  const end = start + PRODUCTS_PER_PAGE;
+
+  const pageProducts = products.slice(start, end);
+
+  pageProducts.forEach((product) => {
 
     // 👇 Tomamos SOLO la primera imagen
     const firstImage = product.imagen
@@ -487,4 +500,39 @@ function scrollFeatured(direction) {
     left: direction * scrollAmount,
     behavior: "smooth"
   });
+}
+
+function renderPagination(products) {
+
+    const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
+
+    let pagination = document.getElementById("pagination");
+
+    if (!pagination) {
+        pagination = document.createElement("div");
+        pagination.id = "pagination";
+        pagination.className = "pagination";
+
+        document.querySelector(".container").appendChild(pagination);
+    }
+
+    pagination.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+
+        const btn = document.createElement("button");
+
+        btn.textContent = i;
+
+        if (i === currentPage)
+            btn.classList.add("active");
+
+        btn.onclick = () => {
+            currentPage = i;
+            renderProducts(products, currentPage);
+            renderPagination(products);
+        };
+
+        pagination.appendChild(btn);
+    }
 }
