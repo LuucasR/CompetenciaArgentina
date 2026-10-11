@@ -1,3 +1,12 @@
+/* =========================
+   CONFIGURACIÓN
+   Único bloque que cambia entre CompetenciaArgentina y CatalogoCA
+========================= */
+
+const MOSTRAR_PRECIOS = true;
+const CART_STORAGE_KEY = "ca_cart";
+const ERROR_PAGE = "../pages/error.php"; // null: muestra el error en la misma página
+
 let allProducts = [];
 
 const PRODUCTS_PER_PAGE = 12;
@@ -71,7 +80,12 @@ renderPagination(allProducts);
     renderFeaturedProducts(); 
   } catch (error) {
     console.error("Error cargando productos:", error);
-    window.location.href = "../pages/error.php";
+    if (ERROR_PAGE) {
+      window.location.href = ERROR_PAGE;
+    } else {
+      document.getElementById("productGrid").innerHTML =
+        "<p>No fue posible obtener los productos. Intente nuevamente más tarde.</p>";
+    }
 }
 }
 
@@ -177,7 +191,7 @@ function renderProducts(products, page = 1) {
       <img src="${firstImage}" alt="${product.nombre}" loading="lazy">
       <div class="card-content">
         <h3>${product.nombre}</h3>
-        <div class="price">${formatPrecio(product.precio)}</div>
+        ${MOSTRAR_PRECIOS ? `<div class="price">${formatPrecio(product.precio)}</div>` : ""}
       </div>
     `;
 
@@ -296,9 +310,10 @@ function openModal(product) {
   </div>
 
   <div class="price-box">
-      <h4>Precios</h4>
+      <h4>${MOSTRAR_PRECIOS ? "Precios" : "Pedido"}</h4>
       ${selectorMedidasHTML}
       ${cantidadHTML}
+      ${MOSTRAR_PRECIOS ? `
 
       <div class="price-tier">
           <span>Precio unitario:</span>
@@ -319,6 +334,7 @@ function openModal(product) {
           <span>Subtotal:</span>
           <strong id="precioSubtotal">${formatPrecio(precioInicial)}</strong>
       </div>
+      ` : ""}
   </div>
 
   <div class="buy-options">
@@ -328,7 +344,7 @@ function openModal(product) {
              🛒 Agregar al carrito
           </button>
           <button class="buy-btn whatsapp" id="btnComprar">
-             Comprar ahora por WhatsApp
+             ${MOSTRAR_PRECIOS ? "Comprar" : "Consultar"} ahora por WhatsApp
           </button>
       </div>
   </div>
@@ -364,6 +380,8 @@ function openModal(product) {
   }
 
   function actualizarPrecios() {
+
+    if (!MOSTRAR_PRECIOS) return;
 
     const precioBase = calcularPrecioBase();
 
@@ -426,11 +444,17 @@ function openModal(product) {
     const nombreMedida = obtenerNombreMedida();
     const total = precioConDescuento(precioBase, cantidad) * cantidad;
 
-    const mensaje = `
+    const mensaje = MOSTRAR_PRECIOS
+      ? `
 Hola, quiero comprar ${product.nombre}
 Medida: ${nombreMedida}
 Cantidad: ${cantidad}
 Total estimado: ${formatPrecio(total)}
+`
+      : `
+Hola, quiero consultar por ${product.nombre}
+Medida: ${nombreMedida}
+Cantidad: ${cantidad}
 `;
 
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
@@ -536,7 +560,7 @@ const destacados = allProducts.filter(
       <img src="${firstImage}" alt="${product.nombre}">
       <div class="featured-info">
         <h3>${product.nombre}</h3>
-        <span>${formatPrecio(product.precio)}</span>
+        ${MOSTRAR_PRECIOS ? `<span>${formatPrecio(product.precio)}</span>` : ""}
       </div>
     `;
 
@@ -595,7 +619,6 @@ function renderPagination(products) {
    CARRITO
 ========================= */
 
-const CART_STORAGE_KEY = "ca_cart";
 let cart = [];
 
 function loadCart() {
@@ -681,7 +704,9 @@ function renderCart() {
   const navCount = document.getElementById("navCartCount");
   if (navCount) navCount.textContent = unidades > 0 ? unidades : "";
 
-  document.getElementById("cartTotal").textContent = formatPrecio(cartTotal());
+  // Sin precios, el pie del carrito muestra la cantidad de unidades
+  document.getElementById("cartTotal").textContent =
+    MOSTRAR_PRECIOS ? formatPrecio(cartTotal()) : unidades;
   document.getElementById("cartSend").disabled = cart.length === 0;
   document.getElementById("cartClear").disabled = cart.length === 0;
 
@@ -696,7 +721,7 @@ function renderCart() {
       <div class="cart-item-info">
         <h4>${item.nombre}</h4>
         <span class="cart-item-medida">Medida: ${item.medida}</span>
-        <span class="cart-item-price">${formatPrecio(precioConDescuento(item.precioBase, item.cantidad))} c/u</span>
+        ${MOSTRAR_PRECIOS ? `<span class="cart-item-price">${formatPrecio(precioConDescuento(item.precioBase, item.cantidad))} c/u</span>` : ""}
         <div class="cart-item-qty">
           <button type="button" data-action="menos" data-index="${index}">-</button>
           <span>${item.cantidad}</span>
@@ -704,7 +729,7 @@ function renderCart() {
         </div>
       </div>
       <div class="cart-item-right">
-        <strong>${formatPrecio(cartItemSubtotal(item))}</strong>
+        ${MOSTRAR_PRECIOS ? `<strong>${formatPrecio(cartItemSubtotal(item))}</strong>` : ""}
         <button type="button" class="cart-item-remove" data-action="eliminar" data-index="${index}">Eliminar</button>
       </div>
     </div>
@@ -732,17 +757,21 @@ function closeCart() {
 function sendCartToWhatsApp() {
   if (cart.length === 0) return;
 
-  const lineas = cart.map((item, i) =>
-    `${i + 1}) ${item.nombre} – Medida: ${item.medida} – Cant: ${item.cantidad} – ` +
-    `${formatPrecio(precioConDescuento(item.precioBase, item.cantidad))} c/u – ` +
-    `Subtotal ${formatPrecio(cartItemSubtotal(item))}`
-  );
+  const lineas = cart.map((item, i) => {
+    const linea = `${i + 1}) ${item.nombre} – Medida: ${item.medida} – Cant: ${item.cantidad}`;
+    if (!MOSTRAR_PRECIOS) return linea;
 
-  const mensaje =
-`Hola, quiero hacer el siguiente pedido:
+    return linea + ` – ${formatPrecio(precioConDescuento(item.precioBase, item.cantidad))} c/u – ` +
+      `Subtotal ${formatPrecio(cartItemSubtotal(item))}`;
+  });
+
+  const mensaje = MOSTRAR_PRECIOS
+    ? `Hola, quiero hacer el siguiente pedido:
 ${lineas.join("\n")}
 
-Total estimado: ${formatPrecio(cartTotal())}`;
+Total estimado: ${formatPrecio(cartTotal())}`
+    : `Hola, quiero consultar por el siguiente pedido:
+${lineas.join("\n")}`;
 
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
 
