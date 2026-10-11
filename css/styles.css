@@ -1101,10 +1101,31 @@ body.modal-open .social-floating {
 /* Botón flotante */
 .cart-btn {
   position: relative;
-  background: #3da9fc;
-  border: none;
+  background: #0d2c54;
+  border: 3px solid white;
   cursor: pointer;
-  font-size: 26px;
+  font-size: 28px;
+}
+
+/* Acceso al carrito en el menú */
+.nav-cart {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-cart-count:not(:empty) {
+  background: #e63946;
+  color: white;
+  font-size: 13px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cart-badge {

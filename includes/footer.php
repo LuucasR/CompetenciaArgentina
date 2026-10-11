@@ -42,7 +42,18 @@ if ($esIndex) {
       </div>
     </aside>
 
-    <script src="<?= BASE_URL ?>js/app.js"></script>
+    <script src="<?= BASE_URL ?>js/app.js?v=<?= filemtime(__DIR__ . '/../js/app.js') ?>"></script>
+<?php
+} else {
+?>
+    <script>
+      // Contador del carrito en el menú para páginas sin app.js
+      try {
+        const cartGuardado = JSON.parse(localStorage.getItem("ca_cart")) || [];
+        const unidades = cartGuardado.reduce((sum, item) => sum + item.cantidad, 0);
+        if (unidades > 0) document.getElementById("navCartCount").textContent = unidades;
+      } catch (error) {}
+    </script>
 <?php
 }
 ?>

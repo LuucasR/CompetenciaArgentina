@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCart();
   renderCart();
   fetchProducts();
+
+  if (new URLSearchParams(window.location.search).has("carrito")) {
+    openCart();
+  }
 });
 
 document.addEventListener("keydown", (event) => {
@@ -666,6 +670,9 @@ function renderCart() {
   const unidades = cart.reduce((sum, item) => sum + item.cantidad, 0);
   badge.textContent = unidades;
   badge.style.display = unidades > 0 ? "flex" : "none";
+
+  const navCount = document.getElementById("navCartCount");
+  if (navCount) navCount.textContent = unidades > 0 ? unidades : "";
 
   document.getElementById("cartTotal").textContent = formatPrecio(cartTotal());
   document.getElementById("cartSend").disabled = cart.length === 0;

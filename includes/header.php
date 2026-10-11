@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Competencia Argentina</title>
 
-<link rel="stylesheet" href="<?= BASE_URL ?>css/styles.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>css/styles.css?v=<?= filemtime(__DIR__ . '/../css/styles.css') ?>">
 </head>
 
 <body>
