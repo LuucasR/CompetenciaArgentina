@@ -23,7 +23,7 @@
   </div>
 
   <div class="header-logo">
-    <img src="<?= BASE_URL ?>img/sources/logoCompetenciaArgentinasf2.png">
+    <img src="<?= BASE_URL ?>img/sources/logoCompetenciaArgentinasf2.png" alt="Competencia Argentina">
 
   </div>
 

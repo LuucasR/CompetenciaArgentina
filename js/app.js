@@ -12,8 +12,31 @@ const WHATSAPP_NUMBER = "541169233139";
 ========================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadCart();
+  renderCart();
   fetchProducts();
 });
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeModal();
+    closeCart();
+  }
+});
+
+/* =========================
+   PRECIOS
+========================= */
+
+function precioConDescuento(precioBase, cantidad) {
+  if (cantidad >= 5) return Math.floor(precioBase * 0.78);
+  if (cantidad >= 3) return Math.floor(precioBase * 0.88);
+  return precioBase;
+}
+
+function formatPrecio(n) {
+  return "$" + Number(n).toLocaleString("es-AR");
+}
 
 /* =========================
    FETCH PRODUCTS (JSON)
@@ -150,7 +173,7 @@ function renderProducts(products, page = 1) {
       <img src="${firstImage}" alt="${product.nombre}" loading="lazy">
       <div class="card-content">
         <h3>${product.nombre}</h3>
-        <div class="price">$${product.precio}</div>
+        <div class="price">${formatPrecio(product.precio)}</div>
       </div>
     `;
 
@@ -173,7 +196,7 @@ function openModal(product) {
   const modal = document.getElementById("productModal");
   const body = document.getElementById("modalBody");
 
-  currentImages = product.imagen
+  currentImages = (product.imagen || "")
     .split("|")
     .map(url => url.trim())
     .filter(url => url !== "");
@@ -275,25 +298,33 @@ function openModal(product) {
 
       <div class="price-tier">
           <span>Precio unitario:</span>
-          <strong id="precioUnitario">$${precioInicial}</strong>
+          <strong id="precioUnitario">${formatPrecio(precioInicial)}</strong>
       </div>
 
       <div class="price-tier">
-          <span>Hasta 3 unidades:</span>
-          <strong id="precioHasta3">$${Math.floor(precioInicial * 0.88)}</strong>
+          <span>3 a 4 unidades (c/u):</span>
+          <strong id="precioHasta3">${formatPrecio(precioConDescuento(precioInicial, 3))}</strong>
       </div>
 
       <div class="price-tier">
-          <span>Más de 5 unidades:</span>
-          <strong id="precioMas5">$${Math.floor(precioInicial * 0.78)}</strong>
+          <span>5 o más unidades (c/u):</span>
+          <strong id="precioMas5">${formatPrecio(precioConDescuento(precioInicial, 5))}</strong>
+      </div>
+
+      <div class="price-tier price-subtotal">
+          <span>Subtotal:</span>
+          <strong id="precioSubtotal">${formatPrecio(precioInicial)}</strong>
       </div>
   </div>
 
   <div class="buy-options">
       <h3 class="buy-title">Canales de compra aqui</h3>
       <div class="buy-buttons">
+          <button class="buy-btn cart" id="btnAgregarCarrito">
+             🛒 Agregar al carrito
+          </button>
           <button class="buy-btn whatsapp" id="btnComprar">
-             Comprar por WhatsApp
+             Comprar ahora por WhatsApp
           </button>
       </div>
   </div>
@@ -319,18 +350,30 @@ function openModal(product) {
     return precioInicial;
   }
 
+  function obtenerNombreMedida() {
+    if (sizeSelect) {
+      const selectedOption =
+        sizeSelect.options[sizeSelect.selectedIndex];
+      return selectedOption.getAttribute("data-nombre");
+    }
+    return nombreMedidaInicial;
+  }
+
   function actualizarPrecios() {
 
     const precioBase = calcularPrecioBase();
 
     document.getElementById("precioUnitario").textContent =
-      "$" + precioBase;
+      formatPrecio(precioBase);
 
     document.getElementById("precioHasta3").textContent =
-      "$" + Math.floor(precioBase * 0.88);
+      formatPrecio(precioConDescuento(precioBase, 3));
 
     document.getElementById("precioMas5").textContent =
-      "$" + Math.floor(precioBase * 0.78);
+      formatPrecio(precioConDescuento(precioBase, 5));
+
+    document.getElementById("precioSubtotal").textContent =
+      formatPrecio(precioConDescuento(precioBase, cantidad) * cantidad);
   }
 
   if (sizeSelect) {
@@ -340,13 +383,33 @@ function openModal(product) {
   btnMas.addEventListener("click", () => {
     cantidad++;
     cantidadSpan.textContent = cantidad;
+    actualizarPrecios();
   });
 
   btnMenos.addEventListener("click", () => {
     if (cantidad > 1) {
       cantidad--;
       cantidadSpan.textContent = cantidad;
+      actualizarPrecios();
     }
+  });
+
+  /* =========================
+     BOTÓN CARRITO
+  ========================= */
+
+  document.getElementById("btnAgregarCarrito").addEventListener("click", () => {
+    addToCart({
+      id: product.id,
+      nombre: product.nombre,
+      medida: obtenerNombreMedida(),
+      precioBase: calcularPrecioBase(),
+      imagen: currentImages[0] || "",
+      cantidad: cantidad
+    });
+
+    closeModal();
+    openCart();
   });
 
   /* =========================
@@ -356,31 +419,14 @@ function openModal(product) {
   document.getElementById("btnComprar").addEventListener("click", function () {
 
     const precioBase = calcularPrecioBase();
-
-    let nombreMedida = nombreMedidaInicial;
-
-    if (sizeSelect) {
-      const selectedOption =
-        sizeSelect.options[sizeSelect.selectedIndex];
-      nombreMedida =
-        selectedOption.getAttribute("data-nombre");
-    }
-
-let precioFinal = precioBase;
-
-if (cantidad >= 3 && cantidad <= 4) {
-  precioFinal = Math.floor(precioBase * 0.88);
-} 
-else if (cantidad >= 5) {
-  precioFinal = Math.floor(precioBase * 0.78);
-}
-    const total = precioFinal * cantidad;
+    const nombreMedida = obtenerNombreMedida();
+    const total = precioConDescuento(precioBase, cantidad) * cantidad;
 
     const mensaje = `
 Hola, quiero comprar ${product.nombre}
 Medida: ${nombreMedida}
 Cantidad: ${cantidad}
-Total estimado: $${total}
+Total estimado: ${formatPrecio(total)}
 `;
 
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
@@ -451,7 +497,7 @@ function closeModal() {
 window.addEventListener("click", (event) => {
   const modal = document.getElementById("productModal");
   if (event.target === modal) {
-    modal.style.display = "none";
+    closeModal();
   }
 });
 
@@ -475,16 +521,18 @@ const destacados = allProducts.filter(
   container.innerHTML = "";
 
   destacados.forEach(product => {
-    const firstImage = product.imagen.split("|")[0].trim();
+    const firstImage = product.imagen
+      ? product.imagen.split("|")[0].trim()
+      : "";
 
     const card = document.createElement("div");
     card.className = "featured-card";
 
     card.innerHTML = `
-      <img src="${firstImage}">
+      <img src="${firstImage}" alt="${product.nombre}">
       <div class="featured-info">
         <h3>${product.nombre}</h3>
-        <span>$${product.precio}</span>
+        <span>${formatPrecio(product.precio)}</span>
       </div>
     `;
 
@@ -531,8 +579,169 @@ function renderPagination(products) {
             currentPage = i;
             renderProducts(products, currentPage);
             renderPagination(products);
+            document.querySelector(".titlecatalogo")
+                .scrollIntoView({ behavior: "smooth" });
         };
 
         pagination.appendChild(btn);
     }
 }
+
+/* =========================
+   CARRITO
+========================= */
+
+const CART_STORAGE_KEY = "ca_cart";
+let cart = [];
+
+function loadCart() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CART_STORAGE_KEY));
+    cart = Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    cart = [];
+  }
+}
+
+function saveCart() {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  } catch (error) {
+    // Sin storage el carrito funciona igual, solo no persiste
+  }
+}
+
+function addToCart(item) {
+  const key = item.id + "|" + item.medida;
+  const existing = cart.find((i) => i.key === key);
+
+  if (existing) {
+    existing.cantidad += item.cantidad;
+  } else {
+    cart.push({ key, ...item });
+  }
+
+  saveCart();
+  renderCart();
+}
+
+function updateCartQty(index, delta) {
+  const item = cart[index];
+  if (!item) return;
+
+  item.cantidad += delta;
+  if (item.cantidad < 1) {
+    cart.splice(index, 1);
+  }
+
+  saveCart();
+  renderCart();
+}
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  saveCart();
+  renderCart();
+}
+
+function clearCart() {
+  cart = [];
+  saveCart();
+  renderCart();
+}
+
+function cartItemSubtotal(item) {
+  return precioConDescuento(item.precioBase, item.cantidad) * item.cantidad;
+}
+
+function cartTotal() {
+  return cart.reduce((sum, item) => sum + cartItemSubtotal(item), 0);
+}
+
+function renderCart() {
+  const itemsContainer = document.getElementById("cartItems");
+  const badge = document.getElementById("cartBadge");
+  if (!itemsContainer || !badge) return;
+
+  const unidades = cart.reduce((sum, item) => sum + item.cantidad, 0);
+  badge.textContent = unidades;
+  badge.style.display = unidades > 0 ? "flex" : "none";
+
+  document.getElementById("cartTotal").textContent = formatPrecio(cartTotal());
+  document.getElementById("cartSend").disabled = cart.length === 0;
+  document.getElementById("cartClear").disabled = cart.length === 0;
+
+  if (cart.length === 0) {
+    itemsContainer.innerHTML = `<p class="cart-empty">Tu carrito está vacío</p>`;
+    return;
+  }
+
+  itemsContainer.innerHTML = cart.map((item, index) => `
+    <div class="cart-item">
+      <img src="${item.imagen}" alt="${item.nombre}">
+      <div class="cart-item-info">
+        <h4>${item.nombre}</h4>
+        <span class="cart-item-medida">Medida: ${item.medida}</span>
+        <span class="cart-item-price">${formatPrecio(precioConDescuento(item.precioBase, item.cantidad))} c/u</span>
+        <div class="cart-item-qty">
+          <button type="button" data-action="menos" data-index="${index}">-</button>
+          <span>${item.cantidad}</span>
+          <button type="button" data-action="mas" data-index="${index}">+</button>
+        </div>
+      </div>
+      <div class="cart-item-right">
+        <strong>${formatPrecio(cartItemSubtotal(item))}</strong>
+        <button type="button" class="cart-item-remove" data-action="eliminar" data-index="${index}">Eliminar</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function openCart() {
+  const drawer = document.getElementById("cartDrawer");
+  if (!drawer) return;
+
+  drawer.classList.add("open");
+  document.getElementById("cartOverlay").classList.add("open");
+  document.body.classList.add("cart-open");
+}
+
+function closeCart() {
+  const drawer = document.getElementById("cartDrawer");
+  if (!drawer) return;
+
+  drawer.classList.remove("open");
+  document.getElementById("cartOverlay").classList.remove("open");
+  document.body.classList.remove("cart-open");
+}
+
+function sendCartToWhatsApp() {
+  if (cart.length === 0) return;
+
+  const lineas = cart.map((item, i) =>
+    `${i + 1}) ${item.nombre} – Medida: ${item.medida} – Cant: ${item.cantidad} – ` +
+    `${formatPrecio(precioConDescuento(item.precioBase, item.cantidad))} c/u – ` +
+    `Subtotal ${formatPrecio(cartItemSubtotal(item))}`
+  );
+
+  const mensaje =
+`Hola, quiero hacer el siguiente pedido:
+${lineas.join("\n")}
+
+Total estimado: ${formatPrecio(cartTotal())}`;
+
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
+
+  window.open(url, "_blank");
+}
+
+document.addEventListener("click", (event) => {
+  const btn = event.target.closest("#cartItems button[data-action]");
+  if (!btn) return;
+
+  const index = parseInt(btn.dataset.index, 10);
+
+  if (btn.dataset.action === "mas") updateCartQty(index, 1);
+  if (btn.dataset.action === "menos") updateCartQty(index, -1);
+  if (btn.dataset.action === "eliminar") removeFromCart(index);
+});

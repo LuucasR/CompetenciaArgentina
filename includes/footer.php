@@ -12,8 +12,36 @@
 </div>
 
 <?php
-if (basename($_SERVER['PHP_SELF']) === 'index.php') {
+$esIndex = basename($_SERVER['PHP_SELF']) === 'index.php';
+
+if ($esIndex) {
 ?>
+    <!-- CARRITO -->
+
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Carrito de compras">
+      <div class="cart-header">
+        <h3>Tu carrito</h3>
+        <button type="button" class="cart-close" onclick="closeCart()" aria-label="Cerrar carrito">✕</button>
+      </div>
+
+      <div class="cart-items" id="cartItems"></div>
+
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Total estimado:</span>
+          <strong id="cartTotal">$0</strong>
+        </div>
+        <button type="button" class="buy-btn whatsapp" id="cartSend" onclick="sendCartToWhatsApp()">
+          Enviar pedido por WhatsApp
+        </button>
+        <button type="button" class="cart-clear" id="cartClear" onclick="clearCart()">
+          Vaciar carrito
+        </button>
+      </div>
+    </aside>
+
     <script src="<?= BASE_URL ?>js/app.js"></script>
 <?php
 }
@@ -22,6 +50,13 @@ if (basename($_SERVER['PHP_SELF']) === 'index.php') {
 <!-- BOTONES REDES -->
 
 <div class="social-floating">
+
+<?php if ($esIndex) { ?>
+  <button type="button" class="social-btn cart-btn" id="cartButton" onclick="openCart()" aria-label="Ver carrito">
+    🛒
+    <span class="cart-badge" id="cartBadge">0</span>
+  </button>
+<?php } ?>
 
   <a href="https://wa.me/541169233139" 
      target="_blank" 
