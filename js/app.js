@@ -602,6 +602,8 @@ function loadCart() {
   try {
     const saved = JSON.parse(localStorage.getItem(CART_STORAGE_KEY));
     cart = Array.isArray(saved) ? saved : [];
+    // Recalcula las claves de carritos guardados con versiones anteriores
+    cart.forEach((item) => item.key = cartKey(item));
   } catch (error) {
     cart = [];
   }
@@ -615,8 +617,13 @@ function saveCart() {
   }
 }
 
+// El Sheet no tiene columna id, así que el producto se identifica por nombre + medida
+function cartKey(item) {
+  return [item.id || "", item.nombre, item.medida].join("|");
+}
+
 function addToCart(item) {
-  const key = item.id + "|" + item.medida;
+  const key = cartKey(item);
   const existing = cart.find((i) => i.key === key);
 
   if (existing) {

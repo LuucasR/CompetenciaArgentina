@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!-- Versión estática de index.php para el hosting sin PHP (competenciaargentina.com). Mantener sincronizada con index.php + includes/. -->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competencia Argentina</title>
+
+<link rel="stylesheet" href="css/styles.css?v=3">
+</head>
+
+<body>
+
+
+<header>
+
+  <div class="header-left">
+    <h1>Competencia Argentina</h1>
+    <span>Precios directos al público</span>
+  </div>
+
+  <div class="header-right">
+    <a href="Privacy-Policy.html">Términos y Condiciones</a>
+  </div>
+
+  <div class="header-logo">
+    <img src="img/sources/logoCompetenciaArgentinasf2.png" alt="Competencia Argentina">
+
+  </div>
+
+</header>
+
+
+<nav class="navbar">
+    <a href="index.html">Inicio</a>
+    <a href="index.html?carrito=1" class="nav-cart" onclick="if (window.openCart) { openCart(); return false; }">
+        🛒 Carrito <span class="nav-cart-count" id="navCartCount"></span>
+    </a>
+</nav>
+
+<section class="featured-section">
+  <div class="featured-inner">
+    <h2>Lo más destacado para nuestros clientes</h2>
+    <p class="subtitle">Calidad accesible para tu hogar</p>
+    <div class="featured-container">
+      <button class="featured-arrow left" onclick="scrollFeatured(-1)">‹</button>
+
+      <div class="featured-track" id="featuredProducts"></div>
+
+      <button class="featured-arrow right" onclick="scrollFeatured(1)">›</button>
+    </div>
+  </div>
+</section>
+
+<div class="titlecatalogo">     
+  <h2>Catalogo</h2>
+</div>
+
+<div class="filters">
+  <select id="lineaFilter">
+    <option value="all">Todas las líneas</option>
+  </select>
+
+  <select id="categoriaFilter">
+    <option value="all">Todas las categorías</option>
+  </select>
+</div>
+
+<div class="container">
+  <div class="grid" id="productGrid"></div>
+</div>
+<footer>
+  🇦🇷 Hecho en Argentina – Competencia Argentina © 2026
+  <br>
+  Desarrollo & Tecnología: Lucas Rodríguez
+</footer>
+
+
+<div class="modal" id="productModal">
+  <div class="modal-content">
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+    <!-- CARRITO -->
+
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Carrito de compras">
+      <div class="cart-header">
+        <h3>Tu carrito</h3>
+        <button type="button" class="cart-close" onclick="closeCart()" aria-label="Cerrar carrito">✕</button>
+      </div>
+
+      <div class="cart-items" id="cartItems"></div>
+
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Total estimado:</span>
+          <strong id="cartTotal">$0</strong>
+        </div>
+        <button type="button" class="buy-btn whatsapp" id="cartSend" onclick="sendCartToWhatsApp()">
+          Enviar pedido por WhatsApp
+        </button>
+        <button type="button" class="cart-clear" id="cartClear" onclick="clearCart()">
+          Vaciar carrito
+        </button>
+      </div>
+    </aside>
+
+    <script src="js/app.js?v=3"></script>
+
+<!-- BOTONES REDES -->
+
+<div class="social-floating">
+
+  <button type="button" class="social-btn cart-btn" id="cartButton" onclick="openCart()" aria-label="Ver carrito">
+    🛒
+    <span class="cart-badge" id="cartBadge">0</span>
+  </button>
+
+  <a href="https://wa.me/541169233139" 
+     target="_blank" 
+     class="social-btn whatsapp">
+    <img src="img/sources/IcoW.png" alt="WhatsApp">
+  </a>
+
+  <a href="https://www.instagram.com/competenciaargentina/" 
+     target="_blank" 
+     class="social-btn instagram">
+  <img src="img/sources/IcoI.png" alt="Instagram">
+  </a>
+
+  <a href="https://www.facebook.com/profile.php?id=61588363227913" 
+     target="_blank" 
+     class="social-btn facebook">
+  <img src="img/sources/IcoF.png" alt="Facebook">
+  </a>
+
+</div>
+
+
+</body>
+</html>
+
